@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.produceIn
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val REENUMERATION_TIMEOUT_MS = 10_000L
@@ -134,7 +134,8 @@ class AndroidHostConnection(
         }
 
         mutableState.value = WaitingForReenumeration(device.identity)
-        return withTimeout(REENUMERATION_TIMEOUT_MS.milliseconds) { broadcasts.awaitAttachedAccessoryModeDevice() }
+        return withTimeoutOrNull(REENUMERATION_TIMEOUT_MS.milliseconds) { broadcasts.awaitAttachedAccessoryModeDevice() }
+            ?: error("Device did not re-enumerate in Accessory mode within $REENUMERATION_TIMEOUT_MS ms")
     }
 
     private suspend fun UsbDevice.withPermission(): UsbDevice {
