@@ -42,11 +42,49 @@ If the device is already in Accessory mode, steps 2–5 are skipped.
 
 Disconnecting is final. Neither app reconnects automatically.
 
-## Run
+## Hardware requirements
 
-```bash
-./gradlew :host-app:installDebug       # on the Host device
-./gradlew :accessory-app:installDebug  # on the Accessory device
-```
+- Two Android devices running Android 12 (API 31) or newer.
+- The Host device must support USB host mode (`android.hardware.usb.host`). The Host powers the Accessory over USB.
+- The Accessory device must support Android Open Accessory (`android.hardware.usb.accessory`). Most phones and tablets do.
+- A cable that connects the Host's USB port to the Accessory's USB port, e.g. USB-C to USB-C, or an OTG adapter on the Host side.
+
+## Try it
+
+1. Install the apps:
+
+   ```bash
+   ./gradlew :host-app:installDebug       # on the Host device
+   ./gradlew :accessory-app:installDebug  # on the Accessory device
+   ```
+
+2. Open **AoA Host** on the Host device.
+3. Connect the two devices. If they were already connected, press **Connect** in the Host app.
+4. Allow USB access on the Host device. After the Accessory re-enumerates, allow USB access again.
+5. The Accessory device opens **AoA Accessory**. Allow USB access there too.
+6. Once both apps show `Connected`, type a message and press **Send** on either side.
+
+The Host identity sent in `HostActivity` must match `EXPECTED_HOST` in `AccessoryActivity` and `res/xml/accessory_filter.xml`.
+
+## Known limitations
+
+- Only one attached USB device is supported on the Host.
+- Neither side reconnects automatically after a disconnect or detach.
+- Messages are limited to 16 KB minus the 4-byte length prefix.
+- The length-prefixed framing is specific to this sample. AoA itself only transfers raw bytes.
+- Audio (`SET_AUDIO_MODE`) and HID requests from AOA 2.0 are not covered.
+- On some devices, a blocked read on the Accessory side only returns after the cable is detached or the Host sends data. Disconnecting from the Accessory side may therefore be delayed.
+
+## References
+
+- [Android Open Accessory protocol 1.0](https://source.android.com/docs/core/interaction/accessories/aoa)
+- [Android Open Accessory protocol 2.0](https://source.android.com/docs/core/interaction/accessories/aoa2)
+- [USB host overview](https://developer.android.com/develop/connectivity/usb/host)
+- [USB accessory overview](https://developer.android.com/develop/connectivity/usb/accessory)
+- [`UsbManager` API reference](https://developer.android.com/reference/android/hardware/usb/UsbManager)
+
+## License
+
+[Apache License 2.0](LICENSE)
 
 The Host must be in the USB host role, for example by using an OTG adapter or a cable that makes the Host the USB-C source. Apps cannot force USB roles. Emulators are not supported.
