@@ -2,6 +2,10 @@
 
 Two apps that talk to each other over USB using Android Open Accessory (AoA) without any SDK.
 
+| Host | Accessory |
+|---|---|
+| <img src="docs/host-app.png" alt="Host app connected to the Accessory, showing the AoA control requests and re-enumeration in its log" width="300"> | <img src="docs/accessory-app.png" alt="Accessory app connected to the Host, showing a received and a sent message" width="300"> |
+
 ## Naming
 
 - **Host**: the device in USB host mode. It sends AoA control requests 51, 52 and 53.
